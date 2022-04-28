@@ -1,0 +1,22 @@
+* {
+  color-scheme: light dark;
+  font-family: sans-serif;
+}
+
+html,
+body {
+  height: 100vh;
+  margin: 0;
+}
+
+body {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+canvas {
+  background-color: black;
+  color: white;
+}

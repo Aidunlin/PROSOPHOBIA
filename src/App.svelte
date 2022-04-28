@@ -38,30 +38,26 @@
     [2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5],
   ];
 
-  const textures = [
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image(),
-    new Image(),
-  ];
+  const imagePaths = [
+    "pics/eagle.png",
+    "pics/redbrick.png",
+    "pics/purplestone.png",
+    "pics/greystone.png",
+    "pics/bluestone.png",
+    "pics/mossy.png",
+    "pics/wood.png",
+    "pics/colorstone.png",
+  ]
 
-  textures[0].src = "pics/eagle.png";
-  textures[1].src = "pics/redbrick.png";
-  textures[2].src = "pics/purplestone.png";
-  textures[3].src = "pics/greystone.png";
-  textures[4].src = "pics/bluestone.png";
-  textures[5].src = "pics/mossy.png";
-  textures[6].src = "pics/wood.png";
-  textures[7].src = "pics/colorstone.png";
+  const textures = imagePaths.map(path => {
+    let image = new Image();
+    image.src = path;
+    return image;
+  })
 
+  const textureSize = 64;
   let innerWidth = 0;
   let innerHeight = 0;
-  const textureWidth = 64;
-  const textureHeight = 64;
 
   let position = new Vector(11.5, 22);
   let direction = new Vector(0, -1);
@@ -103,12 +99,16 @@
 
   function init() {
     ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = false;
     window.requestAnimationFrame(draw);
   }
 
   function draw() {
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
-
+    ctx.fillStyle = "#383838";
+    ctx.fillRect(0, 0, innerWidth, innerHeight);
+    ctx.fillStyle = "#707070";
+    ctx.fillRect(0, innerHeight / 2, innerWidth, innerHeight);
+    
     drawWalls();
 
     oldTime = time;
@@ -168,8 +168,8 @@
       else wallX = position.x + distanceToWall * rayDirection.x;
       wallX -= Math.floor(wallX);
 
-      let textureX = wallX * textureWidth;
-      ctx.drawImage(textures[textureIndex], textureX, 0, 1, textureHeight, x, drawStart, 1, lineHeight);
+      let textureX = Math.floor(wallX * textureSize);
+      ctx.drawImage(textures[textureIndex], textureX, 0, 1, textureSize, x, drawStart, 1, lineHeight);
 
       if (!closestSideIsY) {
         ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";

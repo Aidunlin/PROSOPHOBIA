@@ -25,15 +25,15 @@
       this.direction = new Vector(dx, dy);
     }
     move(by: Vector) {
-      if (!worldMap[Math.floor(this.position.y)][Math.floor(this.position.x + by.x)]) this.position.x += by.x;
-      if (!worldMap[Math.floor(this.position.y + by.y)][Math.floor(this.position.x)]) this.position.y += by.y;
+      if (!WORLD_MAP[Math.floor(this.position.y)][Math.floor(this.position.x + by.x)]) this.position.x += by.x;
+      if (!WORLD_MAP[Math.floor(this.position.y + by.y)][Math.floor(this.position.x)]) this.position.y += by.y;
     }
     look(by: number) {
       this.direction = this.direction.rotateBy(by);
     }
   }
 
-  const worldMap = [
+  const WORLD_MAP = [
     [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4, 6, 4, 4, 6, 4, 6, 4, 4, 4, 6, 4],
     [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
     [8, 0, 3, 3, 0, 0, 0, 0, 0, 8, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
@@ -60,25 +60,23 @@
     [2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5],
   ];
 
-  const imagePaths = [
-    // walls
-    "pics/eagle.png",
-    "pics/redbrick.png",
-    "pics/purplestone.png",
-    "pics/greystone.png",
-    "pics/bluestone.png",
-    "pics/mossy.png",
-    "pics/wood.png",
-    "pics/colorstone.png",
-    // sprites
-    "pics/barrel.png",
-    "pics/pillar.png",
-    "pics/greenlight.png",
+  const IMAGE_NAMES = [
+    "eagle",
+    "redbrick",
+    "purplestone",
+    "greystone",
+    "bluestone",
+    "mossy",
+    "wood",
+    "colorstone",
+    "barrel",
+    "pillar",
+    "greenlight",
   ];
 
-  const textures = imagePaths.map((path) => {
+  const TEXTURES = IMAGE_NAMES.map((path) => {
     let image = new Image();
-    image.src = path;
+    image.src = `pics/${path}.png`;
     return image;
   });
 
@@ -88,36 +86,29 @@
     y: number;
   }
 
-  const sprites: Sprite[] = [
-    //green light in front of playerstart
-    { image: textures[10], y: 20.5, x: 11.5 },
-
-    //green lights in every room
-    { image: textures[10], y: 18.5, x: 4.5 },
-    { image: textures[10], y: 10.0, x: 4.5 },
-    { image: textures[10], y: 10.0, x: 12.5 },
-    { image: textures[10], y: 3.5, x: 6.5 },
-    { image: textures[10], y: 3.5, x: 20.5 },
-    { image: textures[10], y: 3.5, x: 14.5 },
-    { image: textures[10], y: 14.5, x: 20.5 },
-
-    //row of pillars in front of wall: fisheye test
-    { image: textures[9], y: 18.5, x: 10.5 },
-    { image: textures[9], y: 18.5, x: 11.5 },
-    { image: textures[9], y: 18.5, x: 12.5 },
-
-    //some barrels around the map
-    { image: textures[8], y: 21.5, x: 1.5 },
-    { image: textures[8], y: 15.5, x: 1.5 },
-    { image: textures[8], y: 16.0, x: 1.8 },
-    { image: textures[8], y: 16.2, x: 1.2 },
-    { image: textures[8], y: 3.5, x: 2.5 },
-    { image: textures[8], y: 9.5, x: 15.5 },
-    { image: textures[8], y: 10.0, x: 15.1 },
-    { image: textures[8], y: 10.5, x: 15.8 },
+  const SPRITES: Sprite[] = [
+    { image: TEXTURES[8], x: 1.5, y: 15.5 },
+    { image: TEXTURES[8], x: 1.5, y: 21.5 },
+    { image: TEXTURES[8], x: 1.2, y: 16.2 },
+    { image: TEXTURES[8], x: 1.8, y: 16 },
+    { image: TEXTURES[8], x: 2.5, y: 3.5 },
+    { image: TEXTURES[8], x: 15.1, y: 10 },
+    { image: TEXTURES[8], x: 15.5, y: 9.5 },
+    { image: TEXTURES[8], x: 15.8, y: 10.5 },
+    { image: TEXTURES[9], x: 10.5, y: 18.5 },
+    { image: TEXTURES[9], x: 11.5, y: 18.5 },
+    { image: TEXTURES[9], x: 12.5, y: 18.5 },
+    { image: TEXTURES[10], x: 4.5, y: 18.5 },
+    { image: TEXTURES[10], x: 4.5, y: 10 },
+    { image: TEXTURES[10], x: 6.5, y: 3.5 },
+    { image: TEXTURES[10], x: 11.5, y: 20.5 },
+    { image: TEXTURES[10], x: 12.5, y: 10 },
+    { image: TEXTURES[10], x: 14.5, y: 3.5 },
+    { image: TEXTURES[10], x: 20.5, y: 3.5 },
+    { image: TEXTURES[10], x: 20.5, y: 14.5 },
   ];
 
-  const textureSize = 64;
+  const TEXTURE_SIZE = 64;
   let width = 640;
   let height = 480;
 
@@ -153,7 +144,7 @@
 
   function init() {
     canvas.style.aspectRatio = `${width} / ${height}`;
-    ctx = canvas.getContext("2d");
+    ctx = canvas.getContext("2d", { alpha: false });
     ctx.imageSmoothingEnabled = false;
     ctx.font = "36px monospace";
     setInterval(() => (fps = 1 / frameTime), 1000);
@@ -202,7 +193,7 @@
       );
 
       let closestSideIsY = false;
-      while (worldMap[mapCell.y][mapCell.x] == 0) {
+      while (WORLD_MAP[mapCell.y][mapCell.x] == 0) {
         closestSideIsY = sideDistance.y < sideDistance.x;
         if (closestSideIsY) {
           sideDistance.y += deltaStep.y;
@@ -219,11 +210,11 @@
       else wallX = player.position.y + distanceToWall * rayDirection.y;
       wallX -= Math.floor(wallX);
 
-      let texture = textures[worldMap[mapCell.y][mapCell.x] - 1];
-      let textureX = Math.floor(wallX * textureSize);
-      let lineHeight = Math.floor(height / distanceToWall);
+      let texture = TEXTURES[WORLD_MAP[mapCell.y][mapCell.x] - 1];
+      let textureX = Math.floor(wallX * TEXTURE_SIZE);
+      let lineHeight = height / distanceToWall;
       let drawStart = (height - lineHeight) / 2;
-      ctx.drawImage(texture, textureX, 0, 1, textureSize, x, drawStart, 1, lineHeight);
+      ctx.drawImage(texture, textureX, 0, 1, TEXTURE_SIZE, x, drawStart, 1, lineHeight);
 
       if (!closestSideIsY) drawBakedLightingLine(x, drawStart, lineHeight);
 
@@ -232,42 +223,27 @@
   }
 
   function drawSprites() {
-    let sortedSprites = sprites
-      .map<Sprite & { distance: number }>((sprite) => {
-        return {
-          ...sprite,
-          distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
-        };
-      })
-      .sort((a, b) => b.distance - a.distance);
-
-    for (let i = 0; i < sortedSprites.length; i++) {
-      let spritePosition = new Vector(sortedSprites[i].x - player.position.x, sortedSprites[i].y - player.position.y);
-
-      let invDet = 1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y);
+    let sprites = sortSprites();
+    for (let i = 0; i < sprites.length; i++) {
+      let spritePosition = new Vector(sprites[i].x - player.position.x, sprites[i].y - player.position.y);
 
       let transform = new Vector(
         player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
         -player.plane.y * spritePosition.x + player.plane.x * spritePosition.y
-      ).multiplyBy(invDet);
+      ).multiplyBy(1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y));
 
       let spriteScreenX = Math.floor((width / 2) * (1 + transform.x / transform.y));
-      let spriteHeight = Math.abs(Math.floor(height / transform.y));
-      let drawStartY = -spriteHeight / 2 + height / 2;
-      if (drawStartY < -spriteHeight) continue;
-      let drawEndY = spriteHeight / 2 + height / 2;
-      if (drawEndY >= height + spriteHeight) continue;
+      let spriteWidth = Math.floor(Math.abs(height / transform.y));
+      let spriteHeight = Math.floor(Math.abs(height / transform.y));
 
-      let spriteWidth = Math.abs(Math.floor(height / transform.y));
-      let drawStartX = -spriteWidth / 2 + spriteScreenX;
-      if (drawStartX < -spriteWidth) continue;
-      let drawEndX = spriteWidth / 2 + spriteScreenX;
-      if (drawEndX >= width + spriteWidth) continue;
+      let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (height - spriteHeight) / 2);
+      if (drawStart.x < -spriteWidth || drawStart.y < -spriteHeight) continue;
+      if (drawStart.x >= width || drawStart.y >= height) continue;
 
-      for (let stripe = Math.floor(drawStartX); stripe < drawEndX; stripe++) {
-        let textureX = Math.floor(((stripe - (-spriteWidth / 2 + spriteScreenX)) * textureSize) / spriteWidth);
-        if (transform.y > 0 && transform.y < zBuffer[stripe]) {
-          ctx.drawImage(sortedSprites[i].image, textureX, 0, 1, textureSize, stripe, drawStartY, 1, spriteHeight);
+      for (let x = Math.floor(drawStart.x); x < drawStart.x + spriteWidth; x++) {
+        let textureX = Math.floor(((x - (spriteScreenX - spriteWidth / 2)) * TEXTURE_SIZE) / spriteWidth);
+        if (transform.y > 0 && transform.y < zBuffer[x]) {
+          ctx.drawImage(sprites[i].image, textureX, 0, 1, TEXTURE_SIZE, x, drawStart.y, 1, spriteHeight);
         }
       }
     }
@@ -284,6 +260,15 @@
     ctx.moveTo(x, drawStart);
     ctx.lineTo(x, drawStart + lineHeight);
     ctx.stroke();
+  }
+
+  function sortSprites() {
+    return SPRITES.map<Sprite & { distance: number }>((sprite) => {
+      return {
+        ...sprite,
+        distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
+      };
+    }).sort((a, b) => b.distance - a.distance);
   }
 </script>
 

@@ -19,4 +19,6 @@ body {
 canvas {
   background-color: black;
   color: white;
+  height: 100vw;
+  image-rendering: pixelated;
 }

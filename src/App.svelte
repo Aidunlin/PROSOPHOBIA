@@ -18,7 +18,7 @@
     position: Vector;
     direction: Vector;
     get plane(): Vector {
-      return new Vector(-this.direction.y, this.direction.x);
+      return new Vector(-this.direction.y * 0.66, this.direction.x * 0.66);
     }
     constructor(x?: number, y?: number, dx?: number, dy?: number) {
       this.position = new Vector(x, y);
@@ -61,6 +61,7 @@
   ];
 
   const imagePaths = [
+    // walls
     "pics/eagle.png",
     "pics/redbrick.png",
     "pics/purplestone.png",
@@ -69,6 +70,10 @@
     "pics/mossy.png",
     "pics/wood.png",
     "pics/colorstone.png",
+    // sprites
+    "pics/barrel.png",
+    "pics/pillar.png",
+    "pics/greenlight.png",
   ];
 
   const textures = imagePaths.map((path) => {
@@ -77,9 +82,47 @@
     return image;
   });
 
+  interface Sprite {
+    image: HTMLImageElement;
+    x: number;
+    y: number;
+  }
+
+  const sprites: Sprite[] = [
+    //green light in front of playerstart
+    { image: textures[10], y: 20.5, x: 11.5 },
+
+    //green lights in every room
+    { image: textures[10], y: 18.5, x: 4.5 },
+    { image: textures[10], y: 10.0, x: 4.5 },
+    { image: textures[10], y: 10.0, x: 12.5 },
+    { image: textures[10], y: 3.5, x: 6.5 },
+    { image: textures[10], y: 3.5, x: 20.5 },
+    { image: textures[10], y: 3.5, x: 14.5 },
+    { image: textures[10], y: 14.5, x: 20.5 },
+
+    //row of pillars in front of wall: fisheye test
+    { image: textures[9], y: 18.5, x: 10.5 },
+    { image: textures[9], y: 18.5, x: 11.5 },
+    { image: textures[9], y: 18.5, x: 12.5 },
+
+    //some barrels around the map
+    { image: textures[8], y: 21.5, x: 1.5 },
+    { image: textures[8], y: 15.5, x: 1.5 },
+    { image: textures[8], y: 16.0, x: 1.8 },
+    { image: textures[8], y: 16.2, x: 1.2 },
+    { image: textures[8], y: 3.5, x: 2.5 },
+    { image: textures[8], y: 9.5, x: 15.5 },
+    { image: textures[8], y: 10.0, x: 15.1 },
+    { image: textures[8], y: 10.5, x: 15.8 },
+  ];
+
   const textureSize = 64;
-  let innerWidth = 0;
-  let innerHeight = 0;
+  let width = 640;
+  let height = 480;
+
+  let zBuffer = [];
+  for (let i = 0; i < width; i++) zBuffer.push(0);
 
   let player = new Player(11.5, 22, 0, -1);
 
@@ -109,6 +152,7 @@
   }
 
   function init() {
+    canvas.style.aspectRatio = `${width} / ${height}`;
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
     ctx.font = "36px monospace";
@@ -118,9 +162,9 @@
 
   function draw() {
     ctx.fillStyle = "#383838";
-    ctx.fillRect(0, 0, innerWidth, innerHeight);
+    ctx.fillRect(0, 0, width, height);
     ctx.fillStyle = "#707070";
-    ctx.fillRect(0, innerHeight / 2, innerWidth, innerHeight);
+    ctx.fillRect(0, height / 2, width, height);
 
     oldTime = time;
     time = performance.now();
@@ -137,13 +181,14 @@
     if (inputs.ArrowRight) player.look(rotateSpeed);
 
     drawWalls();
+    drawSprites();
     drawText();
     window.requestAnimationFrame(draw);
   }
 
   function drawWalls() {
-    for (let x = 0; x < innerWidth; x++) {
-      let cameraX = (2 * x) / innerWidth - 1;
+    for (let x = 0; x < width; x++) {
+      let cameraX = (2 * x) / width - 1;
       let rayDirection = new Vector(
         player.direction.x + player.plane.x * cameraX,
         player.direction.y + player.plane.y * cameraX
@@ -176,11 +221,55 @@
 
       let texture = textures[worldMap[mapCell.y][mapCell.x] - 1];
       let textureX = Math.floor(wallX * textureSize);
-      let lineHeight = Math.floor(innerHeight / distanceToWall);
-      let drawStart = (innerHeight - lineHeight) / 2;
+      let lineHeight = Math.floor(height / distanceToWall);
+      let drawStart = (height - lineHeight) / 2;
       ctx.drawImage(texture, textureX, 0, 1, textureSize, x, drawStart, 1, lineHeight);
 
       if (!closestSideIsY) drawBakedLightingLine(x, drawStart, lineHeight);
+
+      zBuffer[x] = distanceToWall;
+    }
+  }
+
+  function drawSprites() {
+    let sortedSprites = sprites
+      .map<Sprite & { distance: number }>((sprite) => {
+        return {
+          ...sprite,
+          distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
+        };
+      })
+      .sort((a, b) => b.distance - a.distance);
+
+    for (let i = 0; i < sortedSprites.length; i++) {
+      let spritePosition = new Vector(sortedSprites[i].x - player.position.x, sortedSprites[i].y - player.position.y);
+
+      let invDet = 1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y);
+
+      let transform = new Vector(
+        player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
+        -player.plane.y * spritePosition.x + player.plane.x * spritePosition.y
+      ).multiplyBy(invDet);
+
+      let spriteScreenX = Math.floor((width / 2) * (1 + transform.x / transform.y));
+      let spriteHeight = Math.abs(Math.floor(height / transform.y));
+      let drawStartY = -spriteHeight / 2 + height / 2;
+      if (drawStartY < -spriteHeight) continue;
+      let drawEndY = spriteHeight / 2 + height / 2;
+      if (drawEndY >= height + spriteHeight) continue;
+
+      let spriteWidth = Math.abs(Math.floor(height / transform.y));
+      let drawStartX = -spriteWidth / 2 + spriteScreenX;
+      if (drawStartX < -spriteWidth) continue;
+      let drawEndX = spriteWidth / 2 + spriteScreenX;
+      if (drawEndX >= width + spriteWidth) continue;
+
+      for (let stripe = Math.floor(drawStartX); stripe < drawEndX; stripe++) {
+        let textureX = Math.floor(((stripe - (-spriteWidth / 2 + spriteScreenX)) * textureSize) / spriteWidth);
+        if (transform.y > 0 && transform.y < zBuffer[stripe]) {
+          ctx.drawImage(sortedSprites[i].image, textureX, 0, 1, textureSize, stripe, drawStartY, 1, spriteHeight);
+        }
+      }
     }
   }
 
@@ -198,5 +287,5 @@
   }
 </script>
 
-<svelte:window on:load={init} bind:innerWidth bind:innerHeight on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
-<canvas bind:this={canvas} width={innerWidth} height={innerHeight} />
+<svelte:window on:load={init} on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
+<canvas bind:this={canvas} {width} {height} />

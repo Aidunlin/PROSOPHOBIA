@@ -112,7 +112,7 @@
   let width = 640;
   let height = 480;
 
-  let zBuffer = [];
+  let zBuffer: number[] = [];
   for (let i = 0; i < width; i++) zBuffer.push(0);
 
   let player = new Player(11.5, 22, 0, -1);
@@ -135,15 +135,32 @@
   };
 
   function handleKeyDown(e: KeyboardEvent) {
+    e.preventDefault();
     if (inputs.hasOwnProperty(e.key)) inputs[e.key] = true;
   }
 
   function handleKeyUp(e: KeyboardEvent) {
+    e.preventDefault();
     if (inputs.hasOwnProperty(e.key)) inputs[e.key] = false;
   }
 
+  function handleMouseMove(e: MouseEvent) {
+    player.look(e.movementX * frameTime / 3);
+  }
+
+  document.onpointerlockchange = () => {
+    if (document.pointerLockElement == canvas) {
+      document.onmousemove = handleMouseMove;
+      document.onkeydown = handleKeyDown;
+      document.onkeyup = handleKeyUp;
+    } else {
+      document.onmousemove = null;
+      document.onkeydown = null;
+      document.onkeyup = null;
+    }
+  };
+
   function init() {
-    canvas.style.aspectRatio = `${width} / ${height}`;
     ctx = canvas.getContext("2d", { alpha: false });
     ctx.imageSmoothingEnabled = false;
     ctx.font = "36px monospace";
@@ -173,7 +190,7 @@
 
     drawWalls();
     drawSprites();
-    drawText();
+
     window.requestAnimationFrame(draw);
   }
 
@@ -216,16 +233,29 @@
       let drawStart = (height - lineHeight) / 2;
       ctx.drawImage(texture, textureX, 0, 1, TEXTURE_SIZE, x, drawStart, 1, lineHeight);
 
-      if (!closestSideIsY) drawBakedLightingLine(x, drawStart, lineHeight);
+      if (!closestSideIsY) {
+        ctx.strokeStyle = "rgba(0,0,0,0.5)";
+        ctx.beginPath();
+        ctx.moveTo(x + 0.5, drawStart);
+        ctx.lineTo(x + 0.5, drawStart + lineHeight);
+        ctx.stroke();
+      }
 
       zBuffer[x] = distanceToWall;
     }
   }
 
   function drawSprites() {
-    let sprites = sortSprites();
+    let sprites = SPRITES.map<Sprite & { distance: number }>((sprite) => {
+      return {
+        ...sprite,
+        distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
+      };
+    }).sort((a, b) => b.distance - a.distance);
+
     for (let i = 0; i < sprites.length; i++) {
       let spritePosition = new Vector(sprites[i].x - player.position.x, sprites[i].y - player.position.y);
+      if (Math.abs(spritePosition.x) < 0.1 && Math.abs(spritePosition.y) < 0.1) continue;
 
       let transform = new Vector(
         player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
@@ -248,29 +278,9 @@
       }
     }
   }
-
-  function drawText() {
-    ctx.fillStyle = "green";
-    ctx.fillText(`FPS: ${fps.toFixed(0)}`, 24, 48);
-  }
-
-  function drawBakedLightingLine(x: number, drawStart: number, lineHeight: number) {
-    ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
-    ctx.beginPath();
-    ctx.moveTo(x, drawStart);
-    ctx.lineTo(x, drawStart + lineHeight);
-    ctx.stroke();
-  }
-
-  function sortSprites() {
-    return SPRITES.map<Sprite & { distance: number }>((sprite) => {
-      return {
-        ...sprite,
-        distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
-      };
-    }).sort((a, b) => b.distance - a.distance);
-  }
 </script>
 
-<svelte:window on:load={init} on:keydown={handleKeyDown} on:keyup={handleKeyUp} />
-<canvas bind:this={canvas} {width} {height} />
+<svelte:window on:load={init} />
+<h1>svelteray</h1>
+<canvas bind:this={canvas} {width} {height} on:mousedown={() => canvas.requestPointerLock()} />
+<p>FPS: {fps.toFixed(0)}</p>

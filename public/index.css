@@ -1,6 +1,6 @@
 * {
   color-scheme: light dark;
-  font-family: sans-serif;
+  font-family: monospace;
 }
 
 html,
@@ -17,8 +17,10 @@ body {
 }
 
 canvas {
+  box-sizing: border-box;
   background-color: black;
+  border: 1px solid currentColor;
   color: white;
-  height: 100vw;
+  height: 100vh;
   image-rendering: pixelated;
 }

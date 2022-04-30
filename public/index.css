@@ -14,10 +14,10 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  text-align: center;
 }
 
 canvas {
-  box-sizing: border-box;
   background-color: black;
   border: 1px solid currentColor;
   color: white;

@@ -18,7 +18,7 @@
     position: Vector;
     direction: Vector;
     get plane(): Vector {
-      return new Vector(-this.direction.y * 0.66, this.direction.x * 0.66);
+      return new Vector(-this.direction.y, this.direction.x).multiplyBy(ASPECT_RATIO / 2);
     }
     constructor(x?: number, y?: number, dx?: number, dy?: number) {
       this.position = new Vector(x, y);
@@ -31,6 +31,12 @@
     look(by: number) {
       this.direction = this.direction.rotateBy(by);
     }
+  }
+
+  interface Sprite {
+    image: HTMLImageElement;
+    x: number;
+    y: number;
   }
 
   const WORLD_MAP = [
@@ -80,12 +86,6 @@
     return image;
   });
 
-  interface Sprite {
-    image: HTMLImageElement;
-    x: number;
-    y: number;
-  }
-
   const SPRITES: Sprite[] = [
     { image: TEXTURES[8], x: 1.5, y: 15.5 },
     { image: TEXTURES[8], x: 1.5, y: 21.5 },
@@ -109,11 +109,12 @@
   ];
 
   const TEXTURE_SIZE = 64;
-  let width = 640;
-  let height = 480;
 
-  let zBuffer: number[] = [];
-  for (let i = 0; i < width; i++) zBuffer.push(0);
+  const ASPECT_RATIO = 3 / 2;
+  const HEIGHT = 480;
+  const WIDTH = HEIGHT * ASPECT_RATIO;
+
+  let zBuffer = new Array<number>(WIDTH).fill(0);
 
   let player = new Player(11.5, 22, 0, -1);
 
@@ -123,7 +124,9 @@
   let time = 0;
   let oldTime = 0;
   let frameTime = 0;
-  let fps = 0;
+
+  let frameTimeDisplay = 0;
+  let fpsDisplay = 0;
 
   let inputs = {
     w: false,
@@ -136,16 +139,18 @@
 
   function handleKeyDown(e: KeyboardEvent) {
     e.preventDefault();
-    if (inputs.hasOwnProperty(e.key)) inputs[e.key] = true;
+    let key = e.key.toLowerCase();
+    if (key in inputs) inputs[key] = true;
   }
 
   function handleKeyUp(e: KeyboardEvent) {
     e.preventDefault();
-    if (inputs.hasOwnProperty(e.key)) inputs[e.key] = false;
+    let key = e.key.toLowerCase();
+    if (key in inputs) inputs[key] = false;
   }
 
   function handleMouseMove(e: MouseEvent) {
-    player.look(e.movementX * frameTime / 3);
+    player.look((e.movementX * frameTime) / 3);
   }
 
   document.onpointerlockchange = () => {
@@ -160,19 +165,23 @@
     }
   };
 
+  function updateMetrics() {
+    frameTimeDisplay = frameTime * 1000;
+    fpsDisplay = 1 / frameTime;
+  }
+
   function init() {
     ctx = canvas.getContext("2d", { alpha: false });
     ctx.imageSmoothingEnabled = false;
-    ctx.font = "36px monospace";
-    setInterval(() => (fps = 1 / frameTime), 1000);
+    setInterval(updateMetrics, 1000);
     window.requestAnimationFrame(draw);
   }
 
   function draw() {
     ctx.fillStyle = "#383838";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
     ctx.fillStyle = "#707070";
-    ctx.fillRect(0, height / 2, width, height);
+    ctx.fillRect(0, HEIGHT / 2, WIDTH, HEIGHT);
 
     oldTime = time;
     time = performance.now();
@@ -195,8 +204,8 @@
   }
 
   function drawWalls() {
-    for (let x = 0; x < width; x++) {
-      let cameraX = (2 * x) / width - 1;
+    for (let x = 0; x < WIDTH; x++) {
+      let cameraX = (2 * x) / WIDTH - 1;
       let rayDirection = new Vector(
         player.direction.x + player.plane.x * cameraX,
         player.direction.y + player.plane.y * cameraX
@@ -229,8 +238,8 @@
 
       let texture = TEXTURES[WORLD_MAP[mapCell.y][mapCell.x] - 1];
       let textureX = Math.floor(wallX * TEXTURE_SIZE);
-      let lineHeight = height / distanceToWall;
-      let drawStart = (height - lineHeight) / 2;
+      let lineHeight = HEIGHT / distanceToWall;
+      let drawStart = (HEIGHT - lineHeight) / 2;
       ctx.drawImage(texture, textureX, 0, 1, TEXTURE_SIZE, x, drawStart, 1, lineHeight);
 
       if (!closestSideIsY) {
@@ -261,14 +270,14 @@
         -player.plane.y * spritePosition.x + player.plane.x * spritePosition.y
       ).multiplyBy(1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y));
 
-      let spriteScreenX = Math.floor((width / 2) * (1 + transform.x / transform.y));
-      let spriteWidth = Math.floor(Math.abs(height / transform.y));
-      let spriteHeight = Math.floor(Math.abs(height / transform.y));
-      if (spriteWidth >= width * 2 && spriteHeight >= height * 2) continue;
-      
-      let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (height - spriteHeight) / 2);
+      let spriteScreenX = Math.floor((WIDTH / 2) * (1 + transform.x / transform.y));
+      let spriteWidth = Math.floor(Math.abs(HEIGHT / transform.y));
+      let spriteHeight = Math.floor(Math.abs(HEIGHT / transform.y));
+      if (spriteWidth >= WIDTH * 2 && spriteHeight >= HEIGHT * 2) continue;
+
+      let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (HEIGHT - spriteHeight) / 2);
       if (drawStart.x < -spriteWidth || drawStart.y < -spriteHeight) continue;
-      if (drawStart.x >= width || drawStart.y >= height) continue;
+      if (drawStart.x >= WIDTH || drawStart.y >= HEIGHT) continue;
 
       for (let x = Math.floor(drawStart.x); x < drawStart.x + spriteWidth; x++) {
         let textureX = Math.floor(((x - (spriteScreenX - spriteWidth / 2)) * TEXTURE_SIZE) / spriteWidth);
@@ -281,6 +290,12 @@
 </script>
 
 <svelte:window on:load={init} />
-<h1>svelteray</h1>
-<canvas bind:this={canvas} {width} {height} on:mousedown={() => canvas.requestPointerLock()} />
-<p>FPS: {fps.toFixed(0)}</p>
+<div>
+  <h1>svelteray</h1>
+  <p>
+    A raycaster built in Svelte & Canvas, based on
+    <a href="https://lodev.org/cgtutor/raycasting.html" target="_blank">Lode's Raycasting Tutorial</a>
+  </p>
+</div>
+<canvas bind:this={canvas} width={WIDTH} height={HEIGHT} on:mousedown={() => canvas.requestPointerLock()} />
+<p>FPS: {fpsDisplay.toFixed(0)} | Frametime: {frameTimeDisplay.toFixed(1)} ms</p>

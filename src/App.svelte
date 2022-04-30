@@ -255,7 +255,6 @@
 
     for (let i = 0; i < sprites.length; i++) {
       let spritePosition = new Vector(sprites[i].x - player.position.x, sprites[i].y - player.position.y);
-      if (Math.abs(spritePosition.x) < 0.1 && Math.abs(spritePosition.y) < 0.1) continue;
 
       let transform = new Vector(
         player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
@@ -265,7 +264,8 @@
       let spriteScreenX = Math.floor((width / 2) * (1 + transform.x / transform.y));
       let spriteWidth = Math.floor(Math.abs(height / transform.y));
       let spriteHeight = Math.floor(Math.abs(height / transform.y));
-
+      if (spriteWidth >= width * 2 && spriteHeight >= height * 2) continue;
+      
       let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (height - spriteHeight) / 2);
       if (drawStart.x < -spriteWidth || drawStart.y < -spriteHeight) continue;
       if (drawStart.x >= width || drawStart.y >= height) continue;

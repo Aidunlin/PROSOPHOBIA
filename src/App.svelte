@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { WORLD_MAP, _FREE_ } from "./World.svelte";
+
   class Vector {
     x: number;
     y: number;
@@ -25,8 +27,8 @@
       this.direction = new Vector(dx, dy);
     }
     move(by: Vector) {
-      if (!WORLD_MAP[Math.floor(this.position.y)][Math.floor(this.position.x + by.x)]) this.position.x += by.x;
-      if (!WORLD_MAP[Math.floor(this.position.y + by.y)][Math.floor(this.position.x)]) this.position.y += by.y;
+      if (WORLD_MAP[Math.floor(this.position.y)][Math.floor(this.position.x + by.x * 2)] <= _FREE_) this.position.x += by.x;
+      if (WORLD_MAP[Math.floor(this.position.y + by.y * 2)][Math.floor(this.position.x)] <= _FREE_) this.position.y += by.y;
     }
     look(by: number) {
       this.direction = this.direction.rotateBy(by);
@@ -38,33 +40,6 @@
     x: number;
     y: number;
   }
-
-  const WORLD_MAP = [
-    [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 4, 4, 6, 4, 4, 6, 4, 6, 4, 4, 4, 6, 4],
-    [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-    [8, 0, 3, 3, 0, 0, 0, 0, 0, 8, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-    [8, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-    [8, 0, 3, 3, 0, 0, 0, 0, 0, 8, 8, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4],
-    [8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 4, 0, 0, 0, 0, 0, 6, 6, 6, 0, 6, 4, 6],
-    [8, 8, 8, 8, 0, 8, 8, 8, 8, 8, 8, 4, 4, 4, 4, 4, 4, 6, 0, 0, 0, 0, 0, 6],
-    [7, 7, 7, 7, 0, 7, 7, 7, 7, 0, 8, 0, 8, 0, 8, 0, 8, 4, 0, 4, 0, 6, 0, 6],
-    [7, 7, 0, 0, 0, 0, 0, 0, 7, 8, 0, 8, 0, 8, 0, 8, 8, 6, 0, 0, 0, 0, 0, 6],
-    [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 0, 0, 0, 0, 0, 4],
-    [7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 6, 0, 6, 0, 6, 0, 6],
-    [7, 7, 0, 0, 0, 0, 0, 0, 7, 8, 0, 8, 0, 8, 0, 8, 8, 6, 4, 6, 0, 6, 6, 6],
-    [7, 7, 7, 7, 0, 7, 7, 7, 7, 8, 8, 4, 0, 6, 8, 4, 8, 3, 3, 3, 0, 3, 3, 3],
-    [2, 2, 2, 2, 0, 2, 2, 2, 2, 4, 6, 4, 0, 0, 6, 0, 6, 3, 0, 0, 0, 0, 0, 3],
-    [2, 2, 0, 0, 0, 0, 0, 2, 2, 4, 0, 0, 0, 0, 0, 0, 4, 3, 0, 0, 0, 0, 0, 3],
-    [2, 0, 0, 0, 0, 0, 0, 0, 2, 4, 0, 0, 0, 0, 0, 0, 4, 3, 0, 0, 0, 0, 0, 3],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 4, 4, 4, 4, 4, 6, 0, 6, 3, 3, 0, 0, 0, 3, 3],
-    [2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 1, 2, 2, 2, 6, 6, 0, 0, 5, 0, 5, 0, 5],
-    [2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 0, 5, 0, 5, 0, 0, 0, 5, 5],
-    [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 5, 0, 5, 0, 5, 0, 5, 0, 5],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5],
-    [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 5, 0, 5, 0, 5, 0, 5, 0, 5],
-    [2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 2, 2, 0, 5, 0, 5, 0, 0, 0, 5, 5],
-    [2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5],
-  ];
 
   const IMAGE_NAMES = [
     "eagle",
@@ -86,27 +61,12 @@
     return image;
   });
 
-  const SPRITES: Sprite[] = [
-    { image: TEXTURES[8], x: 1.5, y: 15.5 },
-    { image: TEXTURES[8], x: 1.5, y: 21.5 },
-    { image: TEXTURES[8], x: 1.2, y: 16.2 },
-    { image: TEXTURES[8], x: 1.8, y: 16 },
-    { image: TEXTURES[8], x: 2.5, y: 3.5 },
-    { image: TEXTURES[8], x: 15.1, y: 10 },
-    { image: TEXTURES[8], x: 15.5, y: 9.5 },
-    { image: TEXTURES[8], x: 15.8, y: 10.5 },
-    { image: TEXTURES[9], x: 10.5, y: 18.5 },
-    { image: TEXTURES[9], x: 11.5, y: 18.5 },
-    { image: TEXTURES[9], x: 12.5, y: 18.5 },
-    { image: TEXTURES[10], x: 4.5, y: 18.5 },
-    { image: TEXTURES[10], x: 4.5, y: 10 },
-    { image: TEXTURES[10], x: 6.5, y: 3.5 },
-    { image: TEXTURES[10], x: 11.5, y: 20.5 },
-    { image: TEXTURES[10], x: 12.5, y: 10 },
-    { image: TEXTURES[10], x: 14.5, y: 3.5 },
-    { image: TEXTURES[10], x: 20.5, y: 3.5 },
-    { image: TEXTURES[10], x: 20.5, y: 14.5 },
-  ];
+  let spriteCache: Sprite[] = [];
+  WORLD_MAP.forEach((row, y) => {
+    row.forEach((col, x) => {
+      if (col < 0) spriteCache.push({image: TEXTURES[7 - col], x: x + 0.5, y: y + 0.5});
+    })
+  })
 
   const TEXTURE_SIZE = 64;
 
@@ -219,7 +179,7 @@
       );
 
       let closestSideIsY = false;
-      while (WORLD_MAP[mapCell.y][mapCell.x] == 0) {
+      while (WORLD_MAP[mapCell.y][mapCell.x] <= _FREE_) {
         closestSideIsY = sideDistance.y < sideDistance.x;
         if (closestSideIsY) {
           sideDistance.y += deltaStep.y;
@@ -255,7 +215,7 @@
   }
 
   function drawSprites() {
-    let sprites = SPRITES.map<Sprite & { distance: number }>((sprite) => {
+    let sprites = spriteCache.map<Sprite & { distance: number }>((sprite) => {
       return {
         ...sprite,
         distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,

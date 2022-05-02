@@ -17,35 +17,55 @@
     PLLR,
     BRRL,
   }
-  
-  export const WORLD_MAP = [
-    [W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.GSTN, W.GSTN, W.MOSS, W.GSTN, W.GSTN, W.MOSS, W.GSTN, W.MOSS, W.GSTN, W.GSTN, W.GSTN, W.MOSS, W.GSTN],
-    [W.CSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.CSTN, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.GSTN],
-    [W.CSTN, _FREE_, W.PSTN, W.PSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.CSTN, W.CSTN, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.MOSS],
-    [W.CSTN, _FREE_, S.BRRL, W.PSTN, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, W.MOSS],
-    [W.CSTN, _FREE_, W.PSTN, W.PSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.CSTN, W.CSTN, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.GSTN],
-    [W.CSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.CSTN, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.MOSS, W.MOSS, W.MOSS, _FREE_, W.MOSS, W.GSTN, W.MOSS],
-    [W.CSTN, W.CSTN, W.CSTN, W.CSTN, _FREE_, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.CSTN, W.GSTN, W.GSTN, W.GSTN, W.GSTN, W.GSTN, W.GSTN, W.MOSS, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.MOSS],
-    [W.WOOD, W.WOOD, W.WOOD, W.WOOD, _FREE_, W.WOOD, W.WOOD, W.WOOD, W.WOOD, _FREE_, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, W.GSTN, _FREE_, W.GSTN, _FREE_, W.MOSS, _FREE_, W.MOSS],
-    [W.WOOD, W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, W.CSTN, W.MOSS, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.MOSS],
-    [W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.BRRL, W.CSTN, W.MOSS, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.GSTN],
-    [W.WOOD, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_, S.BRRL, W.CSTN, W.MOSS, _FREE_, W.MOSS, _FREE_, W.MOSS, _FREE_, W.MOSS],
-    [W.WOOD, W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, _FREE_, W.CSTN, W.CSTN, W.MOSS, W.GSTN, W.MOSS, _FREE_, W.MOSS, W.MOSS, W.MOSS],
-    [W.WOOD, W.WOOD, W.WOOD, W.WOOD, _FREE_, W.WOOD, W.WOOD, W.WOOD, W.WOOD, W.CSTN, W.CSTN, W.GSTN, _FREE_, W.MOSS, W.CSTN, W.GSTN, W.CSTN, W.PSTN, W.PSTN, W.PSTN, _FREE_, W.PSTN, W.PSTN, W.PSTN],
-    [W.RBRK, W.RBRK, W.RBRK, W.RBRK, _FREE_, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.GSTN, W.MOSS, W.GSTN, _FREE_, _FREE_, W.MOSS, _FREE_, W.MOSS, W.PSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.PSTN],
-    [W.RBRK, W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.GSTN, W.PSTN, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, W.PSTN],
-    [W.RBRK, S.BRRL, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.GSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.GSTN, W.PSTN, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.PSTN],
-    [W.EGLE, S.BRRL, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.EGLE, W.GSTN, W.GSTN, W.GSTN, W.GSTN, W.GSTN, W.MOSS, _FREE_, W.MOSS, W.PSTN, W.PSTN, _FREE_, _FREE_, _FREE_, W.PSTN, W.PSTN],
-    [W.RBRK, S.BRRL, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, W.RBRK, W.EGLE, W.RBRK, W.RBRK, W.RBRK, W.MOSS, W.MOSS, _FREE_, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN],
-    [W.RBRK, W.RBRK, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, W.RBRK, W.RBRK, W.RBRK, S.PLLR, S.PLLR, S.PLLR, W.RBRK, W.RBRK, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, _FREE_, _FREE_, W.BSTN, W.BSTN],
-    [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN],
-    [W.EGLE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.BSTN],
-    [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, W.BSTN],
-    [W.RBRK, W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, W.RBRK, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, _FREE_, _FREE_, W.BSTN, W.BSTN],
-    [W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.EGLE, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.EGLE, W.RBRK, W.RBRK, W.RBRK, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN],
+
+  export const ROOMS = [
+    [
+      [W.RBRK, W.RBRK, W.RBRK, W.RBRK, _FREE_, W.RBRK, W.EGLE, W.RBRK, W.RBRK],
+      [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK],
+      [W.RBRK, _FREE_, S.BRRL, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.EGLE],
+      [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK],
+      [_FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_],
+      [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK],
+      [W.EGLE, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK],
+      [W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, S.PLLR, W.RBRK],
+      [W.RBRK, W.RBRK, W.EGLE, W.RBRK, _FREE_, W.RBRK, W.RBRK, W.RBRK, W.RBRK],
+    ], [
+      [W.WOOD, W.WOOD, W.WOOD, W.WOOD, _FREE_, W.WOOD, W.WOOD, W.WOOD, W.WOOD],
+      [W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD],
+      [W.WOOD, _FREE_, S.BRRL, _FREE_, _FREE_, _FREE_, S.BRRL, _FREE_, W.WOOD],
+      [W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD],
+      [_FREE_, _FREE_, _FREE_, _FREE_, S.LITE, _FREE_, _FREE_, _FREE_, _FREE_],
+      [W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD],
+      [W.WOOD, _FREE_, S.BRRL, _FREE_, _FREE_, _FREE_, S.BRRL, _FREE_, W.WOOD],
+      [W.WOOD, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.WOOD],
+      [W.WOOD, W.WOOD, W.WOOD, W.WOOD, _FREE_, W.WOOD, W.WOOD, W.WOOD, W.WOOD],
+    ]
   ];
 
-  export function getCell(x: number, y: number) {
-    return WORLD_MAP[Math.floor(y)][Math.floor(x)];
+  export function generateWorld(xRooms: number, yRooms: number) {
+    let world: number[][] = [];
+    for (let y = 0; y < yRooms * 9; y++) {
+      let row: number[] = [];
+      for (let x = 0; x < xRooms * 9; x++) row.push(_FREE_);
+      world.push(row);
+    }
+    for (let yRoom = 0; yRoom < yRooms; yRoom++) {
+      for (let xRoom = 0; xRoom < xRooms; xRoom++) {
+        let room = ROOMS[Math.floor(Math.random() * ROOMS.length)];
+        for (let y = 0; y < 9; y++) {
+          for (let x = 0; x < 9; x++) {
+            let cell = room[y][x];
+            if (xRoom == 0 && x == 0 && cell == _FREE_) cell = W.PSTN;
+            if (yRoom == 0 && y == 0 && cell == _FREE_) cell = W.GSTN;
+            if (xRoom == xRooms - 1 && x == 8 && cell == _FREE_) cell = W.BSTN;
+            if (yRoom == yRooms - 1 && y == 8 && cell == _FREE_) cell = W.MOSS;
+            world[yRoom * 9 + y][xRoom * 9 + x] = cell;
+          }
+        }
+      }
+    }
+    return world;
   }
+
+  export const getCell = (world: number[][], x: number, y: number) => world[Math.floor(y)][Math.floor(x)];
 </script>

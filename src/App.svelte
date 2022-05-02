@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getCell, WORLD_MAP, _FREE_ } from "./World.svelte";
+  import { generateWorld, getCell, _FREE_ } from "./World.svelte";
 
   class Vector {
     x: number;
@@ -33,8 +33,8 @@
     }
 
     move(by: Vector) {
-      if (getCell(this.position.x + by.x, this.position.y) <= _FREE_) this.position.x += by.x;
-      if (getCell(this.position.x, this.position.y + by.y) <= _FREE_) this.position.y += by.y;
+      if (getCell(world, this.position.x + by.x, this.position.y) <= _FREE_) this.position.x += by.x;
+      if (getCell(world, this.position.x, this.position.y + by.y) <= _FREE_) this.position.y += by.y;
     }
 
     look(by: number) {
@@ -47,6 +47,12 @@
     x: number;
     y: number;
   }
+
+  const TEXTURE_SIZE = 64;
+
+  const ASPECT_RATIO = 16 / 9;
+  const HEIGHT = 480;
+  const WIDTH = Math.floor(HEIGHT * ASPECT_RATIO);
 
   const IMAGE_NAMES = [
     "eagle",
@@ -68,24 +74,20 @@
     return image;
   });
 
+  let world = generateWorld(2, 2);
+
   let spriteCache: Sprite[] = [];
-  WORLD_MAP.forEach((row, y) => {
+  world.forEach((row, y) => {
     row.forEach((col, x) => {
       if (col < 0) spriteCache.push({ image: TEXTURES[7 - col], x: x + 0.5, y: y + 0.5 });
     });
   });
 
-  const TEXTURE_SIZE = 64;
-
-  const ASPECT_RATIO = 16 / 9;
-  const HEIGHT = 480;
-  const WIDTH = Math.floor(HEIGHT * ASPECT_RATIO);
-
   let playing = false;
 
   let distances = new Array<number>(WIDTH).fill(0);
 
-  let player = new Player(11.5, 22, 0, -1);
+  let player = new Player(1.5, 1.5, 0, 1);
 
   let canvas: HTMLCanvasElement;
   let ctx: CanvasRenderingContext2D;
@@ -147,7 +149,7 @@
 
   function handleInputs() {
     let moveSpeed = frameTime * 4;
-    let rotateSpeed = frameTime * 3;
+    let rotateSpeed = frameTime * 2;
     if (inputs.w) player.move(player.direction.multiplyBy(moveSpeed));
     if (inputs.s) player.move(player.direction.multiplyBy(-moveSpeed));
     if (inputs.a) player.move(new Vector(player.direction.y, -player.direction.x).multiplyBy(moveSpeed));
@@ -179,7 +181,7 @@
       );
 
       let closestSideIsY = false;
-      while (getCell(mapCell.x, mapCell.y) <= _FREE_) {
+      while (getCell(world, mapCell.x, mapCell.y) <= _FREE_) {
         closestSideIsY = sideDistance.y < sideDistance.x;
         if (closestSideIsY) {
           sideDistance.y += deltaStep.y;
@@ -196,7 +198,7 @@
       else wallX = player.position.y + distances[x] * rayDirection.y;
       wallX -= Math.floor(wallX);
 
-      let texture = TEXTURES[getCell(mapCell.x, mapCell.y) - 1];
+      let texture = TEXTURES[getCell(world, mapCell.x, mapCell.y) - 1];
       let textureX = Math.floor(wallX * TEXTURE_SIZE);
       let lineHeight = HEIGHT / distances[x];
       let drawStart = (HEIGHT - lineHeight) / 2;

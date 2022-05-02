@@ -77,9 +77,11 @@
 
   const TEXTURE_SIZE = 64;
 
-  const ASPECT_RATIO = 3 / 2;
+  const ASPECT_RATIO = 16 / 9;
   const HEIGHT = 480;
-  const WIDTH = HEIGHT * ASPECT_RATIO;
+  const WIDTH = Math.floor(HEIGHT * ASPECT_RATIO);
+
+  let playing = false;
 
   let distances = new Array<number>(WIDTH).fill(0);
 
@@ -91,9 +93,6 @@
   let time = 0;
   let oldTime = 0;
   let frameTime = 0;
-
-  let frameTimeDisplay = 0;
-  let fpsDisplay = 0;
 
   let inputs = {
     w: false,
@@ -124,15 +123,10 @@
     }
   };
 
-  function updateMetrics() {
-    frameTimeDisplay = frameTime * 1000;
-    fpsDisplay = 1 / frameTime;
-  }
-
   function init() {
+    playing = true;
     ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
-    setInterval(updateMetrics, 1000);
     requestAnimationFrame(update);
   }
 
@@ -258,13 +252,21 @@
   }
 </script>
 
-<svelte:window on:load={init} />
-<div>
-  <h1>svelteray</h1>
-  <p>
-    A raycaster built in Svelte & Canvas, based on
-    <a href="https://lodev.org/cgtutor/raycasting.html" target="_blank">Lode's Raycasting Tutorial</a>
-  </p>
-</div>
-<canvas bind:this={canvas} width={WIDTH} height={HEIGHT} on:mousedown={() => canvas.requestPointerLock()} />
-<p>FPS: {fpsDisplay.toFixed(0)} | Frametime: {frameTimeDisplay.toFixed(1)} ms</p>
+{#if !playing}
+  <div>
+    <h1>svelteray</h1>
+    <p>
+      A raycaster built in Svelte & Canvas, based on
+      <a href="https://lodev.org/cgtutor/raycasting.html" target="_blank">Lode's Raycasting Tutorial</a>
+    </p>
+    <button on:click={init}>Start</button>
+  </div>
+{/if}
+<canvas
+  bind:this={canvas}
+  class:hide={!playing}
+  style={`width: calc(100vh * ${ASPECT_RATIO})`}
+  width={WIDTH}
+  height={HEIGHT}
+  on:mousedown={() => canvas.requestPointerLock()}
+/>

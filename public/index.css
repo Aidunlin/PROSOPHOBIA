@@ -5,22 +5,24 @@
 
 html,
 body {
-  height: 100vh;
   margin: 0;
+  padding: 0;
 }
 
 body {
   align-items: center;
   display: flex;
-  flex-direction: column;
+  height: 100vh;
   justify-content: center;
   text-align: center;
 }
 
 canvas {
   background-color: black;
-  border: 1px solid currentColor;
   color: white;
-  height: 100vh;
   image-rendering: pixelated;
+}
+
+.hide {
+  display: none;
 }

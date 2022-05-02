@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { WORLD_MAP, _FREE_ } from "./World.svelte";
+  import { getCell, WORLD_MAP, _FREE_ } from "./World.svelte";
 
   class Vector {
     x: number;
     y: number;
+
     constructor(x?: number, y?: number) {
       this.x = x ?? 0;
       this.y = y ?? 0;
     }
+
     multiplyBy(by: number) {
       return new Vector(this.x * by, this.y * by);
     }
+
     rotateBy(by: number) {
       return new Vector(this.x * Math.cos(by) - this.y * Math.sin(by), this.x * Math.sin(by) + this.y * Math.cos(by));
     }
@@ -19,17 +22,21 @@
   class Player {
     position: Vector;
     direction: Vector;
-    get plane(): Vector {
+
+    get plane() {
       return new Vector(-this.direction.y, this.direction.x).multiplyBy(ASPECT_RATIO / 2);
     }
+
     constructor(x?: number, y?: number, dx?: number, dy?: number) {
       this.position = new Vector(x, y);
       this.direction = new Vector(dx, dy);
     }
+
     move(by: Vector) {
-      if (WORLD_MAP[Math.floor(this.position.y)][Math.floor(this.position.x + by.x * 2)] <= _FREE_) this.position.x += by.x;
-      if (WORLD_MAP[Math.floor(this.position.y + by.y * 2)][Math.floor(this.position.x)] <= _FREE_) this.position.y += by.y;
+      if (getCell(this.position.x + by.x, this.position.y) <= _FREE_) this.position.x += by.x;
+      if (getCell(this.position.x, this.position.y + by.y) <= _FREE_) this.position.y += by.y;
     }
+
     look(by: number) {
       this.direction = this.direction.rotateBy(by);
     }
@@ -64,9 +71,9 @@
   let spriteCache: Sprite[] = [];
   WORLD_MAP.forEach((row, y) => {
     row.forEach((col, x) => {
-      if (col < 0) spriteCache.push({image: TEXTURES[7 - col], x: x + 0.5, y: y + 0.5});
-    })
-  })
+      if (col < 0) spriteCache.push({ image: TEXTURES[7 - col], x: x + 0.5, y: y + 0.5 });
+    });
+  });
 
   const TEXTURE_SIZE = 64;
 
@@ -74,7 +81,7 @@
   const HEIGHT = 480;
   const WIDTH = HEIGHT * ASPECT_RATIO;
 
-  let zBuffer = new Array<number>(WIDTH).fill(0);
+  let distances = new Array<number>(WIDTH).fill(0);
 
   let player = new Player(11.5, 22, 0, -1);
 
@@ -93,31 +100,23 @@
     s: false,
     a: false,
     d: false,
-    ArrowLeft: false,
-    ArrowRight: false,
+    arrowleft: false,
+    arrowright: false,
   };
 
-  function handleKeyDown(e: KeyboardEvent) {
-    e.preventDefault();
+  function handleKey(e: KeyboardEvent, isDown: boolean) {
     let key = e.key.toLowerCase();
-    if (key in inputs) inputs[key] = true;
-  }
-
-  function handleKeyUp(e: KeyboardEvent) {
-    e.preventDefault();
-    let key = e.key.toLowerCase();
-    if (key in inputs) inputs[key] = false;
-  }
-
-  function handleMouseMove(e: MouseEvent) {
-    player.look((e.movementX * frameTime) / 3);
+    if (key in inputs) {
+      e.preventDefault();
+      inputs[key] = isDown;
+    }
   }
 
   document.onpointerlockchange = () => {
     if (document.pointerLockElement == canvas) {
-      document.onmousemove = handleMouseMove;
-      document.onkeydown = handleKeyDown;
-      document.onkeyup = handleKeyUp;
+      document.onmousemove = (e: MouseEvent) => player.look((e.movementX * frameTime) / 3);
+      document.onkeydown = (e: KeyboardEvent) => handleKey(e, true);
+      document.onkeyup = (e: KeyboardEvent) => handleKey(e, false);
     } else {
       document.onmousemove = null;
       document.onkeydown = null;
@@ -131,36 +130,43 @@
   }
 
   function init() {
-    ctx = canvas.getContext("2d", { alpha: false });
+    ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false;
     setInterval(updateMetrics, 1000);
-    window.requestAnimationFrame(draw);
+    requestAnimationFrame(update);
   }
 
-  function draw() {
-    ctx.fillStyle = "#383838";
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-    ctx.fillStyle = "#707070";
-    ctx.fillRect(0, HEIGHT / 2, WIDTH, HEIGHT);
+  function update() {
+    updateTime();
+    handleInputs();
+    drawBackground();
+    drawWalls();
+    drawSprites();
+    requestAnimationFrame(update);
+  }
 
+  function updateTime() {
     oldTime = time;
     time = performance.now();
     frameTime = (time - oldTime) / 1000;
+  }
 
+  function handleInputs() {
     let moveSpeed = frameTime * 4;
     let rotateSpeed = frameTime * 3;
-
     if (inputs.w) player.move(player.direction.multiplyBy(moveSpeed));
     if (inputs.s) player.move(player.direction.multiplyBy(-moveSpeed));
     if (inputs.a) player.move(new Vector(player.direction.y, -player.direction.x).multiplyBy(moveSpeed));
     if (inputs.d) player.move(new Vector(-player.direction.y, player.direction.x).multiplyBy(moveSpeed));
-    if (inputs.ArrowLeft) player.look(-rotateSpeed);
-    if (inputs.ArrowRight) player.look(rotateSpeed);
+    if (inputs.arrowleft) player.look(-rotateSpeed);
+    if (inputs.arrowright) player.look(rotateSpeed);
+  }
 
-    drawWalls();
-    drawSprites();
-
-    window.requestAnimationFrame(draw);
+  function drawBackground() {
+    ctx.fillStyle = "#383838";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    ctx.fillStyle = "#707070";
+    ctx.fillRect(0, HEIGHT / 2, WIDTH, HEIGHT);
   }
 
   function drawWalls() {
@@ -179,7 +185,7 @@
       );
 
       let closestSideIsY = false;
-      while (WORLD_MAP[mapCell.y][mapCell.x] <= _FREE_) {
+      while (getCell(mapCell.x, mapCell.y) <= _FREE_) {
         closestSideIsY = sideDistance.y < sideDistance.x;
         if (closestSideIsY) {
           sideDistance.y += deltaStep.y;
@@ -189,63 +195,66 @@
           mapCell.x += Math.sign(rayDirection.x);
         }
       }
-      let distanceToWall = closestSideIsY ? sideDistance.y - deltaStep.y : sideDistance.x - deltaStep.x;
+      distances[x] = closestSideIsY ? sideDistance.y - deltaStep.y : sideDistance.x - deltaStep.x;
 
       let wallX = 0.0;
-      if (closestSideIsY) wallX = player.position.x + distanceToWall * rayDirection.x;
-      else wallX = player.position.y + distanceToWall * rayDirection.y;
+      if (closestSideIsY) wallX = player.position.x + distances[x] * rayDirection.x;
+      else wallX = player.position.y + distances[x] * rayDirection.y;
       wallX -= Math.floor(wallX);
 
-      let texture = TEXTURES[WORLD_MAP[mapCell.y][mapCell.x] - 1];
+      let texture = TEXTURES[getCell(mapCell.x, mapCell.y) - 1];
       let textureX = Math.floor(wallX * TEXTURE_SIZE);
-      let lineHeight = HEIGHT / distanceToWall;
+      let lineHeight = HEIGHT / distances[x];
       let drawStart = (HEIGHT - lineHeight) / 2;
-      ctx.drawImage(texture, textureX, 0, 1, TEXTURE_SIZE, x, drawStart, 1, lineHeight);
 
-      if (!closestSideIsY) {
-        ctx.strokeStyle = "rgba(0,0,0,0.5)";
-        ctx.beginPath();
-        ctx.moveTo(x + 0.5, drawStart);
-        ctx.lineTo(x + 0.5, drawStart + lineHeight);
-        ctx.stroke();
-      }
-
-      zBuffer[x] = distanceToWall;
+      drawImageColumn(texture, textureX, x, drawStart, lineHeight);
+      if (!closestSideIsY) drawShadowColumn(x, drawStart, lineHeight);
     }
   }
 
   function drawSprites() {
-    let sprites = spriteCache.map<Sprite & { distance: number }>((sprite) => {
-      return {
+    spriteCache
+      .map((sprite) => ({
         ...sprite,
         distance: (player.position.x - sprite.x) ** 2 + (player.position.y - sprite.y) ** 2,
-      };
-    }).sort((a, b) => b.distance - a.distance);
+      }))
+      .sort((a, b) => b.distance - a.distance)
+      .forEach((sprite) => {
+        let spritePosition = new Vector(sprite.x - player.position.x, sprite.y - player.position.y);
 
-    for (let i = 0; i < sprites.length; i++) {
-      let spritePosition = new Vector(sprites[i].x - player.position.x, sprites[i].y - player.position.y);
+        let transform = new Vector(
+          player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
+          -player.plane.y * spritePosition.x + player.plane.x * spritePosition.y
+        ).multiplyBy(1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y));
 
-      let transform = new Vector(
-        player.direction.y * spritePosition.x - player.direction.x * spritePosition.y,
-        -player.plane.y * spritePosition.x + player.plane.x * spritePosition.y
-      ).multiplyBy(1 / (player.plane.x * player.direction.y - player.direction.x * player.plane.y));
+        let spriteScreenX = Math.floor((WIDTH / 2) * (1 + transform.x / transform.y));
+        let spriteWidth = Math.floor(Math.abs(HEIGHT / transform.y));
+        let spriteHeight = Math.floor(Math.abs(HEIGHT / transform.y));
+        if (spriteWidth >= WIDTH * 2 && spriteHeight >= HEIGHT * 2) return;
 
-      let spriteScreenX = Math.floor((WIDTH / 2) * (1 + transform.x / transform.y));
-      let spriteWidth = Math.floor(Math.abs(HEIGHT / transform.y));
-      let spriteHeight = Math.floor(Math.abs(HEIGHT / transform.y));
-      if (spriteWidth >= WIDTH * 2 && spriteHeight >= HEIGHT * 2) continue;
+        let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (HEIGHT - spriteHeight) / 2);
+        if (drawStart.x < -spriteWidth || drawStart.y < -spriteHeight) return;
+        if (drawStart.x >= WIDTH || drawStart.y >= HEIGHT) return;
 
-      let drawStart = new Vector(spriteScreenX - spriteWidth / 2, (HEIGHT - spriteHeight) / 2);
-      if (drawStart.x < -spriteWidth || drawStart.y < -spriteHeight) continue;
-      if (drawStart.x >= WIDTH || drawStart.y >= HEIGHT) continue;
-
-      for (let x = Math.floor(drawStart.x); x < drawStart.x + spriteWidth; x++) {
-        let textureX = Math.floor(((x - (spriteScreenX - spriteWidth / 2)) * TEXTURE_SIZE) / spriteWidth);
-        if (transform.y > 0 && transform.y < zBuffer[x]) {
-          ctx.drawImage(sprites[i].image, textureX, 0, 1, TEXTURE_SIZE, x, drawStart.y, 1, spriteHeight);
+        for (let x = Math.floor(drawStart.x); x < drawStart.x + spriteWidth; x++) {
+          let textureX = Math.floor(((x - (spriteScreenX - spriteWidth / 2)) * TEXTURE_SIZE) / spriteWidth);
+          if (transform.y > 0 && transform.y < distances[x]) {
+            drawImageColumn(sprite.image, textureX, x, drawStart.y, spriteHeight);
+          }
         }
-      }
-    }
+      });
+  }
+
+  function drawImageColumn(image: CanvasImageSource, x: number, dx: number, dy: number, dh: number) {
+    ctx.drawImage(image, x, 0, 1, TEXTURE_SIZE, dx, dy, 1, dh);
+  }
+
+  function drawShadowColumn(x: number, y: number, height: number) {
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    ctx.beginPath();
+    ctx.moveTo(x + 0.5, y);
+    ctx.lineTo(x + 0.5, y + height);
+    ctx.stroke();
   }
 </script>
 

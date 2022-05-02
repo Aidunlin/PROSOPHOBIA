@@ -44,4 +44,8 @@
     [W.RBRK, W.RBRK, _FREE_, _FREE_, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, W.RBRK, _FREE_, _FREE_, _FREE_, W.RBRK, W.RBRK, _FREE_, W.BSTN, _FREE_, W.BSTN, _FREE_, _FREE_, _FREE_, W.BSTN, W.BSTN],
     [W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.EGLE, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.RBRK, W.EGLE, W.RBRK, W.RBRK, W.RBRK, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN, W.BSTN],
   ];
+
+  export function getCell(x: number, y: number) {
+    return WORLD_MAP[Math.floor(y)][Math.floor(x)];
+  }
 </script>

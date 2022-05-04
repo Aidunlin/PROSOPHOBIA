@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { generateWorld, World } from "./world";
+  import { World } from "./world";
   import { getSprites, Sprite } from "./sprite";
   import { Player } from "./player";
   import { Raycaster } from "./raycaster";
@@ -23,7 +23,7 @@
 
   function init() {
     textures = getTextures();
-    world = generateWorld(2, 2);
+    world = new World(2, 2);
     sprites = getSprites(world, textures);
     player = new Player(world, 1.5, 1.5, Math.PI / 2);
     raycaster = new Raycaster(canvas, textures, world, sprites, player);

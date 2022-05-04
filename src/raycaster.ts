@@ -1,5 +1,5 @@
 import { Vector } from "./vector";
-import { getCell, EMPTY, World } from "./world";
+import { EMPTY, World } from "./world";
 import type { Sprite } from "./sprite";
 import type { Player } from "./player";
 
@@ -73,7 +73,7 @@ export class Raycaster {
     );
 
     let closestSideIsY = false;
-    while (getCell(this.world, mapCell.x, mapCell.y) <= EMPTY) {
+    while (this.world.at(mapCell.x, mapCell.y) <= EMPTY) {
       closestSideIsY = sideDistance.y < sideDistance.x;
       if (closestSideIsY) {
         sideDistance.y += deltaStep.y;
@@ -90,7 +90,7 @@ export class Raycaster {
     else wallX = this.player.position.y + this.depthBuffer[x] * rayDirection.y;
     wallX -= Math.floor(wallX);
 
-    let texture = this.textures[getCell(this.world, mapCell.x, mapCell.y) - 1];
+    let texture = this.textures[this.world.at(mapCell.x, mapCell.y) - 1];
     let textureX = Math.floor(wallX * texture.height);
     let drawSize = this.height / this.depthBuffer[x];
     let drawStart = (this.height - drawSize) / 2;

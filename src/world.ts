@@ -1,4 +1,32 @@
-export type World = number[][];
+export class World {
+  map: number[][];
+
+  constructor(xRooms: number, yRooms: number) {
+    this.map = [];
+    for (let y = 0; y < yRooms * 9; y++) {
+      this.map.push(new Array<number>(xRooms * 9).fill(EMPTY));
+    }
+    for (let yRoom = 0; yRoom < yRooms; yRoom++) {
+      for (let xRoom = 0; xRoom < xRooms; xRoom++) {
+        let room = ROOMS[Math.floor(Math.random() * ROOMS.length)];
+        for (let y = 0; y < 9; y++) {
+          for (let x = 0; x < 9; x++) {
+            let cell = room[y][x];
+            if (xRoom == 0 && x == 0 && cell == EMPTY) cell = W.PST;
+            if (yRoom == 0 && y == 0 && cell == EMPTY) cell = W.GST;
+            if (xRoom == xRooms - 1 && x == 8 && cell == EMPTY) cell = W.BST;
+            if (yRoom == yRooms - 1 && y == 8 && cell == EMPTY) cell = W.MSS;
+            this.map[yRoom * 9 + y][xRoom * 9 + x] = cell;
+          }
+        }
+      }
+    }
+  }
+
+  at(x: number, y: number) {
+    return this.map[Math.floor(y)][Math.floor(x)];
+  }
+}
 
 export const EMPTY = 0;
 
@@ -54,32 +82,3 @@ const ROOMS = [
     [W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD],
   ],
 ];
-
-export function generateWorld(xRooms: number, yRooms: number) {
-  let world: World = [];
-  for (let y = 0; y < yRooms * 9; y++) {
-    let row: number[] = [];
-    for (let x = 0; x < xRooms * 9; x++) row.push(EMPTY);
-    world.push(row);
-  }
-  for (let yRoom = 0; yRoom < yRooms; yRoom++) {
-    for (let xRoom = 0; xRoom < xRooms; xRoom++) {
-      let room = ROOMS[Math.floor(Math.random() * ROOMS.length)];
-      for (let y = 0; y < 9; y++) {
-        for (let x = 0; x < 9; x++) {
-          let cell = room[y][x];
-          if (xRoom == 0 && x == 0 && cell == EMPTY) cell = W.PST;
-          if (yRoom == 0 && y == 0 && cell == EMPTY) cell = W.GST;
-          if (xRoom == xRooms - 1 && x == 8 && cell == EMPTY) cell = W.BST;
-          if (yRoom == yRooms - 1 && y == 8 && cell == EMPTY) cell = W.MSS;
-          world[yRoom * 9 + y][xRoom * 9 + x] = cell;
-        }
-      }
-    }
-  }
-  return world;
-}
-
-export function getCell(world: World, x: number, y: number) {
-  return world[Math.floor(y)][Math.floor(x)];
-}

@@ -26,7 +26,7 @@
     world = generateWorld(2, 2);
     sprites = getSprites(world, textures);
     player = new Player(world, 1.5, 1.5, Math.PI / 2);
-    raycaster = new Raycaster(canvas, WIDTH, HEIGHT);
+    raycaster = new Raycaster(canvas, textures, world, sprites, player);
     playing = true;
     requestAnimationFrame(update);
   }
@@ -34,7 +34,7 @@
   function update() {
     updateTime();
     player.handleInputs(frameTime);
-    raycaster.draw(textures, world, sprites, player);
+    raycaster.draw();
     requestAnimationFrame(update);
   }
 

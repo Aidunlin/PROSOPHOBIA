@@ -2,10 +2,10 @@ import { Vector } from "./vector";
 import { getCell, EMPTY, World } from "./world";
 
 export class Player {
-  world: World;
+  private world: World;
   position: Vector;
   direction: Vector;
-  inputs = {
+  private inputs = {
     w: false,
     s: false,
     a: false,

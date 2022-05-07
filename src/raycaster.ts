@@ -105,9 +105,9 @@ export class Raycaster {
     wallX -= Math.floor(wallX);
 
     let texture = this.textures[this.world.at(mapCell.x, mapCell.y) - 1];
-    let textureX = Math.floor(wallX * texture.height);
-    let drawSize = this.height / this.depthBuffer[x];
-    let drawStart = (this.height - drawSize) / 2;
+    let textureX = Math.floor(wallX * texture.width);
+    let drawSize = Math.floor(this.height / this.depthBuffer[x]);
+    let drawStart = Math.floor((this.height - drawSize) / 2);
 
     this.drawImageColumn(texture, textureX, x, drawStart, drawSize);
     if (!closestSideIsY) this.shadows.push({ x, drawStart, drawSize });

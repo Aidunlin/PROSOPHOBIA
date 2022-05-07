@@ -41,9 +41,9 @@ export class Raycaster {
   }
 
   private drawBackground() {
-    this.ctx.fillStyle = "#383838";
-    this.ctx.fillRect(0, 0, this.width, this.height);
-    this.ctx.fillStyle = "#707070";
+    this.ctx.fillStyle = "#a09948";
+    this.ctx.fillRect(0, 0, this.width, this.height / 2);
+    this.ctx.fillStyle = "#847d41";
     this.ctx.fillRect(0, this.height / 2, this.width, this.height);
   }
 
@@ -52,7 +52,7 @@ export class Raycaster {
   }
 
   private drawShadows() {
-    this.ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    this.ctx.strokeStyle = "rgba(0,0,0,0.3)";
     this.ctx.beginPath();
     this.shadows.forEach((line) => {
       this.ctx.moveTo(line.x + 0.5, line.drawStart);

@@ -12,10 +12,10 @@ export class World {
         for (let y = 0; y < 9; y++) {
           for (let x = 0; x < 9; x++) {
             let cell = room[y][x];
-            if (xRoom == 0 && x == 0 && cell == EMPTY) cell = W.PST;
-            if (yRoom == 0 && y == 0 && cell == EMPTY) cell = W.GST;
-            if (xRoom == xRooms - 1 && x == 8 && cell == EMPTY) cell = W.BST;
-            if (yRoom == yRooms - 1 && y == 8 && cell == EMPTY) cell = W.MSS;
+            if (cell == EMPTY) {
+              if ((xRoom == 0 && x == 0) || (xRoom == xRooms - 1 && x == 8)) cell = W.LV0;
+              if ((yRoom == 0 && y == 0) || (yRoom == yRooms - 1 && y == 8)) cell = W.LV0;
+            }
             this.map[yRoom * 9 + y][xRoom * 9 + x] = cell;
           }
         }
@@ -31,54 +31,43 @@ export class World {
 export const EMPTY = 0;
 
 enum W {
-  EGL = 1,
-  RBK,
-  PST,
-  GST,
-  BST,
-  MSS,
-  WDD,
-  CST,
+  LV0 = 1,
 }
 
-enum S {
-  LIT = -3,
-  PLR,
-  BRL,
-}
+enum S {}
 
 const ROOMS = [
   [
-    [W.RBK, W.RBK, W.RBK, W.RBK, EMPTY, W.RBK, W.EGL, W.RBK, W.RBK],
-    [W.RBK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.RBK],
-    [W.RBK, EMPTY, S.BRL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.EGL],
-    [W.RBK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.RBK],
-    [EMPTY, EMPTY, EMPTY, EMPTY, S.LIT, EMPTY, EMPTY, EMPTY, EMPTY],
-    [W.RBK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.RBK],
-    [W.EGL, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.RBK],
-    [W.RBK, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, S.PLR, W.RBK],
-    [W.RBK, W.RBK, W.EGL, W.RBK, EMPTY, W.RBK, W.RBK, W.RBK, W.RBK],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0, EMPTY, EMPTY, W.LV0],
+    [EMPTY, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0, EMPTY, EMPTY, EMPTY],
+    [W.LV0, EMPTY, EMPTY, W.LV0, W.LV0, W.LV0, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
   ],
   [
-    [W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [W.WDD, EMPTY, S.BRL, EMPTY, EMPTY, EMPTY, S.BRL, EMPTY, W.WDD],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [EMPTY, EMPTY, EMPTY, EMPTY, S.LIT, EMPTY, EMPTY, EMPTY, EMPTY],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [W.WDD, EMPTY, S.BRL, EMPTY, EMPTY, EMPTY, S.BRL, EMPTY, W.WDD],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0],
+    [W.LV0, W.LV0, W.LV0, EMPTY, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, W.LV0, EMPTY, EMPTY, EMPTY, W.LV0, W.LV0, W.LV0],
+    [W.LV0, EMPTY, W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
   ],
   [
-    [W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD],
-    [W.WDD, EMPTY, EMPTY, W.WDD, EMPTY, EMPTY, W.WDD, EMPTY, W.WDD],
-    [W.WDD, EMPTY, EMPTY, W.WDD, EMPTY, EMPTY, W.WDD, EMPTY, W.WDD],
-    [W.WDD, EMPTY, W.WDD, W.WDD, EMPTY, EMPTY, W.WDD, EMPTY, W.WDD],
-    [EMPTY, EMPTY, EMPTY, EMPTY, S.LIT, EMPTY, W.WDD, EMPTY, EMPTY],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, EMPTY, W.WDD],
-    [W.WDD, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.WDD],
-    [W.WDD, W.WDD, W.WDD, W.WDD, EMPTY, W.WDD, W.WDD, W.WDD, W.WDD],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
+    [W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0],
+    [W.LV0, EMPTY, W.LV0, W.LV0, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0],
+    [EMPTY, EMPTY, EMPTY, EMPTY, W.LV0, EMPTY, W.LV0, EMPTY, EMPTY],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, EMPTY, W.LV0],
+    [W.LV0, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, W.LV0],
+    [W.LV0, W.LV0, W.LV0, W.LV0, EMPTY, W.LV0, W.LV0, W.LV0, W.LV0],
   ],
 ];

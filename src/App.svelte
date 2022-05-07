@@ -4,7 +4,7 @@
   import { Player } from "./player";
   import { Raycaster } from "./raycaster";
 
-  const ASPECT_RATIO = 16 / 9;
+  const ASPECT_RATIO = 4 / 3;
   const HEIGHT = 480;
   const WIDTH = Math.floor(HEIGHT * ASPECT_RATIO);
 
@@ -40,20 +40,10 @@
 
   function getTextures() {
     return [
-      "eagle",
-      "redbrick",
-      "purplestone",
-      "greystone",
-      "bluestone",
-      "mossy",
-      "wood",
-      "colorstone",
-      "barrel",
-      "pillar",
-      "greenlight",
+      "level0",
     ].map((name) => {
       let image = new Image();
-      image.src = `pics/${name}.png`;
+      image.src = `assets/${name}.png`;
       return image;
     });
   }

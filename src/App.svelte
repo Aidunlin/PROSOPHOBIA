@@ -79,12 +79,8 @@
 
 {#if !playing}
   <div>
-    <h1>svelteray</h1>
-    <p>
-      A raycaster built in Svelte & Canvas, based on
-      <a href="https://lodev.org/cgtutor/raycasting.html" target="_blank">Lode's Raycasting Tutorial</a>
-    </p>
-    <button on:click={init}>Start</button>
+    <h1>PROSOPHOBIA</h1>
+    <button on:click={init}>Play</button>
   </div>
 {/if}
 

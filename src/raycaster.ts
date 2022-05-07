@@ -8,6 +8,7 @@ export class Raycaster {
   private width: number;
   private height: number;
   private depthBuffer: number[];
+  private shadows: { x: number; drawStart: number; drawSize: number }[];
   private textures: HTMLImageElement[];
   private world: World;
   private sprites: Sprite[];
@@ -25,6 +26,7 @@ export class Raycaster {
     this.width = canvas.width;
     this.height = canvas.height;
     this.depthBuffer = new Array<number>(this.width).fill(0);
+    this.shadows = [];
     this.textures = textures;
     this.world = world;
     this.sprites = sprites;
@@ -34,6 +36,7 @@ export class Raycaster {
   draw() {
     this.drawBackground();
     this.drawWalls();
+    this.drawShadows();
     this.drawSprites();
   }
 
@@ -46,6 +49,17 @@ export class Raycaster {
 
   private drawWalls() {
     for (let x = 0; x < this.width; x++) this.drawWall(x);
+  }
+
+  private drawShadows() {
+    this.ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    this.ctx.beginPath();
+    this.shadows.forEach((line) => {
+      this.ctx.moveTo(line.x + 0.5, line.drawStart);
+      this.ctx.lineTo(line.x + 0.5, line.drawStart + line.drawSize);
+    });
+    this.ctx.stroke();
+    this.shadows = [];
   }
 
   private drawSprites() {
@@ -96,7 +110,7 @@ export class Raycaster {
     let drawStart = (this.height - drawSize) / 2;
 
     this.drawImageColumn(texture, textureX, x, drawStart, drawSize);
-    if (!closestSideIsY) this.drawShadowColumn(x, drawStart, drawSize);
+    if (!closestSideIsY) this.shadows.push({ x, drawStart, drawSize });
   }
 
   private drawSprite(sprite: Sprite & { distance: number }) {
@@ -117,21 +131,13 @@ export class Raycaster {
 
     for (let x = Math.floor(drawStart.x); x < drawStart.x + drawSize; x++) {
       if (transform.y > 0 && transform.y < this.depthBuffer[x]) {
-        let textureX = Math.floor(((x - drawStart.x) * sprite.image.width) / drawSize);
+        let textureX = Math.floor(((x - drawStart.x) * sprite.image.naturalWidth) / drawSize);
         this.drawImageColumn(sprite.image, textureX, x, drawStart.y, drawSize);
       }
     }
   }
 
   private drawImageColumn(image: HTMLImageElement, x: number, dx: number, dy: number, dh: number) {
-    this.ctx.drawImage(image, x, 0, 1, image.height, dx, dy, 1, dh);
-  }
-
-  private drawShadowColumn(x: number, y: number, height: number) {
-    this.ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    this.ctx.beginPath();
-    this.ctx.moveTo(x + 0.5, y);
-    this.ctx.lineTo(x + 0.5, y + height);
-    this.ctx.stroke();
+    this.ctx.drawImage(image, x, 0, 1, image.naturalHeight, dx, dy, 1, dh);
   }
 }

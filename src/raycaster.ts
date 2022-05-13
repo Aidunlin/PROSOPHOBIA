@@ -1,5 +1,5 @@
 import { Vector } from "./vector";
-import { EMPTY, World } from "./world";
+import type { World } from "./world";
 import type { Sprite } from "./sprite";
 import type { Player } from "./player";
 
@@ -87,7 +87,7 @@ export class Raycaster {
     );
 
     let closestSideIsY = false;
-    while (this.world.at(mapCell.x, mapCell.y) <= EMPTY) {
+    while (this.world.at(mapCell.x, mapCell.y) <= 0) {
       closestSideIsY = sideDistance.y < sideDistance.x;
       if (closestSideIsY) {
         sideDistance.y += deltaStep.y;

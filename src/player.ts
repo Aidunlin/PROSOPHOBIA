@@ -1,5 +1,5 @@
 import { Vector } from "./vector";
-import { EMPTY, World } from "./world";
+import type { World } from "./world";
 
 export class Player {
   private world: World;
@@ -25,8 +25,8 @@ export class Player {
   }
 
   move(by: Vector) {
-    if (this.world.at(this.position.x + by.x, this.position.y) <= EMPTY) this.position.x += by.x;
-    if (this.world.at(this.position.x, this.position.y + by.y) <= EMPTY) this.position.y += by.y;
+    if (this.world.at(this.position.x + by.x, this.position.y) <= 0) this.position.x += by.x;
+    if (this.world.at(this.position.x, this.position.y + by.y) <= 0) this.position.y += by.y;
   }
 
   look(by: number) {

@@ -2,37 +2,35 @@
   import { Game } from "./game";
 
   let canvas: HTMLCanvasElement;
-  let game: Game;
-  
-  function init() {
-    game = new Game(window, canvas);
-  }
+  let displayHeight = "100vh";
+  let displayWidth = `calc(${displayHeight} * ${Game.ASPECT_RATIO})`;
 
-  document.onpointerlockchange = () => {
-    if (document.pointerLockElement == canvas) {
-      onmousemove = game.handleMouseMove;
-      onkeydown = game.handleKeyDown;
-      onkeyup = game.handleKeyUp;
-    } else {
-      onmousemove = null;
-      onkeydown = null;
-      onkeyup = null;
-    }
-  };
+  function init() {
+    let game = new Game(canvas);
+    document.onpointerlockchange = () => {
+      if (document.pointerLockElement == canvas) {
+        document.onmousemove = game.handleMouseMove;
+        document.onkeydown = game.handleKeyDown;
+        document.onkeyup = game.handleKeyUp;
+      } else {
+        document.onmousemove = null;
+        document.onkeydown = null;
+        document.onkeyup = null;
+      }
+    };
+  }
 </script>
 
-{#if !game}
-  <div>
-    <h1>PROSOPHOBIA</h1>
-    <button on:click={init}>Play</button>
-  </div>
-{/if}
+<svelte:window on:load={init} />
 
 <canvas
   bind:this={canvas}
-  class:hide={!game}
-  style={`width: calc(100vh * ${Game.ASPECT_RATIO}); height: 100vh`}
+  style={`width: ${displayWidth}; height: ${displayHeight}`}
   width={Game.WIDTH}
   height={Game.HEIGHT}
   on:mousedown={() => canvas.requestPointerLock()}
 />
+
+<div id="textures">
+  <img src="./assets/level0.png" alt="" />
+</div>

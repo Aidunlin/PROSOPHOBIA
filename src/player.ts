@@ -2,10 +2,10 @@ import { Vector } from "./vector";
 import type { World } from "./world";
 
 export class Player {
-  private world: World;
+  world: World;
   position: Vector;
   direction: Vector;
-  private inputs = {
+  inputs = {
     w: false,
     s: false,
     a: false,

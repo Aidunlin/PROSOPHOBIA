@@ -23,6 +23,6 @@ canvas {
   image-rendering: pixelated;
 }
 
-.hide {
+#textures {
   display: none;
 }

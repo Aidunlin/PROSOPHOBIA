@@ -4,29 +4,29 @@ import type { Sprite } from "./sprite";
 import type { Player } from "./player";
 
 export class Raycaster {
-  private ctx: CanvasRenderingContext2D;
-  private width: number;
-  private height: number;
-  private depthBuffer: number[];
-  private shadows: { x: number; drawStart: number; drawSize: number }[];
-  private textures: HTMLImageElement[];
-  private world: World;
-  private sprites: Sprite[];
-  private player: Player;
+  ctx: CanvasRenderingContext2D;
+  width: number;
+  height: number;
+  pixels: ImageData;
+  depths: number[];
+  textures: ImageData[];
+  world: World;
+  sprites: Sprite[];
+  player: Player;
 
   constructor(
     canvas: HTMLCanvasElement,
-    textures: HTMLImageElement[],
+    textures: ImageData[],
     world: World,
     sprites: Sprite[],
     player: Player
   ) {
-    this.ctx = canvas.getContext("2d");
+    this.ctx = canvas.getContext("2d", {alpha: false});
     this.ctx.imageSmoothingEnabled = false;
     this.width = canvas.width;
     this.height = canvas.height;
-    this.depthBuffer = new Array<number>(this.width).fill(0);
-    this.shadows = [];
+    this.pixels = this.ctx.getImageData(0, 0, this.width, this.height);
+    this.depths = new Array<number>(this.width).fill(0);
     this.textures = textures;
     this.world = world;
     this.sprites = sprites;
@@ -36,33 +36,30 @@ export class Raycaster {
   draw() {
     this.drawBackground();
     this.drawWalls();
-    this.drawShadows();
     this.drawSprites();
+    this.ctx.putImageData(this.pixels, 0, 0);
+  }
+  
+  drawBackground() {
+    for (let i = 0; i < this.pixels.data.length / 2; i += 4) {
+      this.pixels.data[i] = 160;
+      this.pixels.data[i + 1] = 153;
+      this.pixels.data[i + 2] = 72;
+      this.pixels.data[i + 3] = 255;
+    }
+    for (let i = this.pixels.data.length / 2; i < this.pixels.data.length; i += 4) {
+      this.pixels.data[i] = 132;
+      this.pixels.data[i + 1] = 125;
+      this.pixels.data[i + 2] = 65;
+      this.pixels.data[i + 3] = 255;
+    }
   }
 
-  private drawBackground() {
-    this.ctx.fillStyle = "#a09948";
-    this.ctx.fillRect(0, 0, this.width, this.height / 2);
-    this.ctx.fillStyle = "#847d41";
-    this.ctx.fillRect(0, this.height / 2, this.width, this.height);
-  }
-
-  private drawWalls() {
+  drawWalls() {
     for (let x = 0; x < this.width; x++) this.drawWall(x);
   }
 
-  private drawShadows() {
-    this.ctx.strokeStyle = "rgba(0,0,0,0.3)";
-    this.ctx.beginPath();
-    this.shadows.forEach((line) => {
-      this.ctx.moveTo(line.x + 0.5, line.drawStart);
-      this.ctx.lineTo(line.x + 0.5, line.drawStart + line.drawSize);
-    });
-    this.ctx.stroke();
-    this.shadows = [];
-  }
-
-  private drawSprites() {
+  drawSprites() {
     this.sprites
       .map((sprite) => ({
         ...sprite,
@@ -72,7 +69,7 @@ export class Raycaster {
       .forEach((sprite) => this.drawSprite(sprite));
   }
 
-  private drawWall(x: number) {
+  drawWall(x: number) {
     let cameraX = (2 * x) / this.width - 1;
     let rayDirection = new Vector(
       this.player.direction.x + this.player.plane.x * cameraX,
@@ -97,23 +94,21 @@ export class Raycaster {
         mapCell.x += Math.sign(rayDirection.x);
       }
     }
-    this.depthBuffer[x] = closestSideIsY ? sideDistance.y - deltaStep.y : sideDistance.x - deltaStep.x;
+    this.depths[x] = closestSideIsY ? sideDistance.y - deltaStep.y : sideDistance.x - deltaStep.x;
 
     let wallX = 0;
-    if (closestSideIsY) wallX = this.player.position.x + this.depthBuffer[x] * rayDirection.x;
-    else wallX = this.player.position.y + this.depthBuffer[x] * rayDirection.y;
+    if (closestSideIsY) wallX = this.player.position.x + this.depths[x] * rayDirection.x;
+    else wallX = this.player.position.y + this.depths[x] * rayDirection.y;
     wallX -= Math.floor(wallX);
 
     let texture = this.textures[this.world.at(mapCell.x, mapCell.y) - 1];
     let textureX = Math.floor(wallX * texture.width);
-    let drawSize = Math.floor(this.height / this.depthBuffer[x]);
+    let drawSize = Math.floor(this.height / this.depths[x]);
     let drawStart = Math.floor((this.height - drawSize) / 2);
-
-    this.drawImageColumn(texture, textureX, x, drawStart, drawSize);
-    if (!closestSideIsY) this.shadows.push({ x, drawStart, drawSize });
+    this.drawTextureColumn(texture, textureX, x, drawStart, drawSize, closestSideIsY ? 1 : 0.6);
   }
 
-  private drawSprite(sprite: Sprite & { distance: number }) {
+  drawSprite(sprite: Sprite & { distance: number }) {
     let position = new Vector(sprite.x - this.player.position.x, sprite.y - this.player.position.y);
 
     let transform = new Vector(
@@ -130,14 +125,24 @@ export class Raycaster {
     if (drawStart.x >= this.width || drawStart.y >= this.height) return;
 
     for (let x = Math.floor(drawStart.x); x < drawStart.x + drawSize; x++) {
-      if (transform.y > 0 && transform.y < this.depthBuffer[x]) {
-        let textureX = Math.floor(((x - drawStart.x) * sprite.image.naturalWidth) / drawSize);
-        this.drawImageColumn(sprite.image, textureX, x, drawStart.y, drawSize);
+      if (transform.y > 0 && transform.y < this.depths[x]) {
+        let textureX = Math.floor(((x - drawStart.x) * sprite.texture.width) / drawSize);
+        this.drawTextureColumn(sprite.texture, textureX, x, drawStart.y, drawSize);
       }
     }
   }
 
-  private drawImageColumn(image: HTMLImageElement, x: number, dx: number, dy: number, dh: number) {
-    this.ctx.drawImage(image, x, 0, 1, image.naturalHeight, dx, dy, 1, dh);
+  drawTextureColumn(texture: ImageData, textureX: number, dx: number, dy: number, dh: number, a: number = 1) {
+    let step = texture.height / dh;
+    let textureY = Math.max(0, (dy - (this.height + dh) / 2) * step);
+    let textureWidth = texture.width;
+    for (let y = dy; y < dy + dh; y++) {
+      let destIndex = y * this.width * 4 + dx * 4;
+      let srcIndex = Math.floor(textureY) * textureWidth * 4 + textureX * 4;
+      this.pixels.data[destIndex] = texture.data[srcIndex] * a;
+      this.pixels.data[destIndex + 1] = texture.data[srcIndex + 1] * a;
+      this.pixels.data[destIndex + 2] = texture.data[srcIndex + 2] * a;
+      textureY += step;
+    }
   }
 }

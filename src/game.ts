@@ -8,36 +8,33 @@ export class Game {
   static readonly HEIGHT = 480;
   static readonly WIDTH = Math.floor(this.HEIGHT * this.ASPECT_RATIO);
 
-  window: Window;
-
   playing = false;
   
   time = 0;
   oldTime = 0;
   frameTime = 0;
   
-  textures: HTMLImageElement[] = [];
+  textures: ImageData[] = [];
   world: World;
   sprites: Sprite[] = [];
   player: Player;
   raycaster: Raycaster;
   
-  constructor(window: Window, canvas: HTMLCanvasElement) {
-    this.window = window;
+  constructor(canvas: HTMLCanvasElement) {
     this.textures = this.getTextures();
     this.world = new World(2, 2);
     this.sprites = Sprite.getSprites(this.world, this.textures);
     this.player = new Player(this.world, 1.5, 1.5, Math.PI / 2);
     this.raycaster = new Raycaster(canvas, this.textures, this.world, this.sprites, this.player);
     this.playing = true;
-    this.window.requestAnimationFrame(this.update);
+    requestAnimationFrame(this.update);
   }
   
   update: FrameRequestCallback = () => {
     this.updateTime();
     this.player.handleInputs(this.frameTime);
     this.raycaster.draw();
-    this.window.requestAnimationFrame(this.update);
+    requestAnimationFrame(this.update);
   }
   
   updateTime() {
@@ -47,12 +44,13 @@ export class Game {
   }
   
   getTextures() {
-    return [
-      "level0",
-    ].map((name) => {
-      let image = new Image();
-      image.src = `assets/${name}.png`;
-      return image;
+    let tempCanvas = document.createElement("canvas");
+    tempCanvas.width = 1024;
+    tempCanvas.height = 1024;
+    let tempCtx = tempCanvas.getContext("2d");
+    return [...document.getElementById("textures").children].map((texture: HTMLImageElement) => {
+      tempCtx.drawImage(texture, 0, 0);
+      return tempCtx.getImageData(0, 0, texture.width, texture.height);
     });
   }
 

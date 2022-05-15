@@ -14,15 +14,8 @@ export class Raycaster {
   sprites: Sprite[];
   player: Player;
 
-  constructor(
-    canvas: HTMLCanvasElement,
-    textures: ImageData[],
-    world: World,
-    sprites: Sprite[],
-    player: Player
-  ) {
-    this.ctx = canvas.getContext("2d", {alpha: false});
-    this.ctx.imageSmoothingEnabled = false;
+  constructor(canvas: HTMLCanvasElement, textures: ImageData[], world: World, sprites: Sprite[], player: Player) {
+    this.ctx = canvas.getContext("2d");
     this.width = canvas.width;
     this.height = canvas.height;
     this.pixels = this.ctx.getImageData(0, 0, this.width, this.height);
@@ -39,7 +32,7 @@ export class Raycaster {
     this.drawSprites();
     this.ctx.putImageData(this.pixels, 0, 0);
   }
-  
+
   drawBackground() {
     for (let i = 0; i < this.pixels.data.length / 2; i += 4) {
       this.pixels.data[i] = 160;
@@ -132,13 +125,14 @@ export class Raycaster {
     }
   }
 
-  drawTextureColumn(texture: ImageData, textureX: number, dx: number, dy: number, dh: number, a: number = 1) {
+  drawTextureColumn(texture: ImageData, textureX: number, dx: number, dy: number, dh: number, a = 1) {
     let step = texture.height / dh;
+    if (step < 0.1) return;
     let textureY = Math.max(0, (dy - (this.height + dh) / 2) * step);
     let textureWidth = texture.width;
     for (let y = dy; y < dy + dh; y++) {
-      let destIndex = y * this.width * 4 + dx * 4;
-      let srcIndex = Math.floor(textureY) * textureWidth * 4 + textureX * 4;
+      let destIndex = (y * this.width + dx) * 4;
+      let srcIndex = (Math.floor(textureY) * textureWidth + textureX) * 4;
       this.pixels.data[destIndex] = texture.data[srcIndex] * a;
       this.pixels.data[destIndex + 1] = texture.data[srcIndex + 1] * a;
       this.pixels.data[destIndex + 2] = texture.data[srcIndex + 2] * a;

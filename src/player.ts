@@ -21,7 +21,7 @@ export class Player {
   constructor(world: World, x: number, y: number, angle: number) {
     this.world = world;
     this.position = new Vector(x, y);
-    this.direction = new Vector(Math.cos(angle) * 0.66, Math.sign(angle) * 0.66);
+    this.direction = new Vector(Math.cos(angle), Math.sign(angle)).multiplyBy(2 / 3);
   }
 
   move(by: Vector) {

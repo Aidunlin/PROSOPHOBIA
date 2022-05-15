@@ -6,6 +6,10 @@ export class World {
     for (let y = 0; y < yRooms * 9; y++) {
       this.map.push(new Array<number>(xRooms * 9).fill(0));
     }
+    this.generate(xRooms, yRooms);
+  }
+
+  generate(xRooms: number, yRooms: number) {
     for (let yRoom = 0; yRoom < yRooms; yRoom++) {
       for (let xRoom = 0; xRoom < xRooms; xRoom++) {
         let room = ROOMS[Math.floor(Math.random() * ROOMS.length)];
@@ -23,9 +27,7 @@ export class World {
     }
   }
 
-  at(x: number, y: number) {
-    return this.map[Math.floor(y)][Math.floor(x)];
-  }
+  at = (x: number, y: number) => this.map[Math.floor(y)][Math.floor(x)];
 }
 
 const ROOMS = [
